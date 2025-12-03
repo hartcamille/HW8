@@ -1,6 +1,6 @@
 /******************************************************************
  *
- *   YOUR NAME / SECTION NUMBER
+ *   CAMILLE HART COMP 272 002
  *
  *   Note, additional comments provided throughout this source code
  *   is for educational purposes
@@ -104,7 +104,28 @@ public class Graph {
   
   public int findRoot() {
 
-    // ADD YOUR CODE HERE - DO NOT FORGET TO ADD YOUR NAME/SECTION AT TOP OF FILE
-    return -1;
-  } 
+    if (vertices == null || vertices.length == 0) return -1;
+    int n = vertices.length;
+    int[] indeg = new int[n];
+
+    // assume Graph stores edges; adapt names to your Graph class fields
+    // Example: edges represented as adjacency list or edge list.
+    // If you have adjacency list `adj`, loop through and increment indeg[neighbor].
+    for (int u = 0; u < n; u++) {
+        for (int v : adjacency[u]) { // adjust to your field names
+            indeg[v]++;
+        }
+    }
+
+    int rootIndex = -1;
+    int zeros = 0;
+    for (int i = 0; i < n; i++) {
+        if (indeg[i] == 0) {
+            zeros++;
+            rootIndex = i;
+        }
+    }
+    if (zeros == 1) return vertices[rootIndex].value; // or just return rootIndex if spec wants index
+    else return -1;
 }
+  
