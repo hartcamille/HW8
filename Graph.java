@@ -101,31 +101,36 @@ public class Graph {
    * and/or more than one root vertex, then return -1.
    * 
    */
-  
+
   public int findRoot() {
 
-    if (vertices == null || vertices.length == 0) return -1;
-    int n = vertices.length;
-    int[] indeg = new int[n];
+      // Count incoming edges for all vertices
+      int[] incoming = new int[numVertices];
 
-    // assume Graph stores edges; adapt names to your Graph class fields
-    // Example: edges represented as adjacency list or edge list.
-    // If you have adjacency list `adj`, loop through and increment indeg[neighbor].
-    for (int u = 0; u < n; u++) {
-        for (int v : adjacency[u]) { // adjust to your field names
-            indeg[v]++;
-        }
-    }
+      //loop through all edges and count incoming edges
+      for (int src = 0; src < numVertices; src++) {
+          for (int dest : adjListArr[src]) {
+              incoming[dest]++; //dest has someone pointing at it
+          }
+      }
 
-    int rootIndex = -1;
-    int zeros = 0;
-    for (int i = 0; i < n; i++) {
-        if (indeg[i] == 0) {
-            zeros++;
-            rootIndex = i;
-        }
-    }
-    if (zeros == 1) return vertices[rootIndex].value; // or just return rootIndex if spec wants index
-    else return -1;
+      // Find vertex with zero incoming edges
+      int rootIndex = -1;
+      for (int v = 0; v < numVertices; v++) {
+          if (incoming[v] == 0) {
+              if (rootIndex != -1) { //if root found already, then too many roots
+                  // More than one root found, not valid
+                  return -1;
+              }
+              rootIndex = v; //found potential root
+          }
+      }
+
+      // If no root OR multiple → return -1
+      if (rootIndex == -1) return -1;
+
+      // Return its *value*, not the index
+      return vertexValues.get(rootIndex);
+  }
+
 }
-  
