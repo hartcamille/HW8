@@ -74,15 +74,49 @@ class ProblemSolutions {
 
     public boolean canFinish(int numExams, 
                              int[][] prerequisites) {
-      
+
         int numNodes = numExams;  // # of nodes in graph
 
         // Build directed graph's adjacency list
-        ArrayList<Integer>[] adj = getAdjList(numExams, 
-                                        prerequisites); 
+        ArrayList<Integer>[] adj = getAdjList(numExams,
+                prerequisites);
 
-        // ADD YOUR CODE HERE - ADD YOUR NAME / SECTION AT TOP OF FILE
-        return false;
+        // Compute indegrees
+        int[] indegree = new int[numExams];
+        for (int node = 0; node < numExams; node++) {
+            for (int neighbor : adj[node]) {
+                indegree[neighbor]++;
+            }
+        }
+
+// Add nodes with zero indegree to queue
+        Queue<Integer> q = new LinkedList<>();
+        for (int i = 0; i < numExams; i++) {
+            if (indegree[i] == 0) {
+                q.offer(i);
+            }
+        }
+
+        int visited = 0; //how many exams we can complete in valid order
+
+// Perform BFS topological sort
+        while (!q.isEmpty()) {
+            int curr = q.poll(); //exam that has no remaining prereqs
+            visited++;
+
+            //"remove" this exam from the prereq structure
+            for (int nei : adj[curr]) {
+                indegree[nei]--; //one prereq satisfied
+                if (indegree[nei] == 0) {
+                    q.offer(nei); //this exam is now unlocked
+                }
+            }
+        }
+
+// If we visited all nodes → no cycle
+        return visited == numExams;
+
+      //  return false;
 
     }
 
@@ -190,9 +224,39 @@ class ProblemSolutions {
             }
         }
 
-        // YOUR CODE GOES HERE - you can add helper methods, you do not need
-        // to put all code in this method.
-        return -1;
+        int groups = 0;
+        boolean[] visited = new boolean[numNodes];
+
+// Build default empty lists for truly isolated nodes
+        for (int node = 0; node < numNodes; node++) {
+            graph.putIfAbsent(node, new ArrayList<>());
+        }
+
+// DFS for each connected component
+        for (int node = 0; node < numNodes; node++) {
+            if (!visited[node]) {
+                groups++;
+                // BFS/DFS to mark component
+                Stack<Integer> stack = new Stack<>();
+                stack.push(node);
+
+                //visit everything connected to this node
+                while (!stack.isEmpty()) {
+                    int curr = stack.pop();
+                    if (!visited[curr]) {
+                        visited[curr] = true;
+
+                        //add neighbors to atack to continue
+                        for (int nei : graph.get(curr)) {
+                            if (!visited[nei]) stack.push(nei);
+                        }
+                    }
+                }
+            }
+        }
+
+        return groups;
+
     }
 
 }
